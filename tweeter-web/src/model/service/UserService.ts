@@ -36,5 +36,5 @@ export class UserService {
     }
 
     return [user, FakeData.instance.authToken];
-  };
+  }
 }
