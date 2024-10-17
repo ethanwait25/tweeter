@@ -1,31 +1,21 @@
 import { ChangeEvent } from "react";
-import { UserService } from "../../model/service/UserService";
 import { Buffer } from "buffer";
-import { User, AuthToken } from "tweeter-shared";
-import { Presenter, View } from "../Presenter";
+import {
+  AuthenticationPresenter,
+  AuthenticationView,
+} from "./AuthenticationPresenter";
 
-export interface RegisterView extends View {
-  updateUserInfo: (
-    currentUser: User,
-    displayedUser: User | null,
-    authToken: AuthToken,
-    remember: boolean
-  ) => void;
-  setIsLoading: (loading: boolean) => void;
-  navigate: (url: string) => void;
+export interface RegisterView extends AuthenticationView {
   setImageUrl: (url: string) => void;
   setImageFileExtension: (extension: string) => void;
 }
 
-export class RegisterPresenter extends Presenter<RegisterView> {
-  private userService: UserService;
-
+export class RegisterPresenter extends AuthenticationPresenter {
   private imageBytes: Uint8Array = new Uint8Array();
   private imageFileExtension: string = "";
 
-  constructor(view: RegisterView) {
-    super(view);
-    this.userService = new UserService();
+  protected get view(): RegisterView {
+    return super.view as RegisterView;
   }
 
   public async doRegister(
@@ -37,19 +27,22 @@ export class RegisterPresenter extends Presenter<RegisterView> {
   ) {
     this.doFailureReportingOperation(
       async () => {
-        this.view.setIsLoading(true);
-
-        const [user, authToken] = await this.userService.register(
-          firstName,
-          lastName,
-          alias,
-          password,
-          this.imageBytes,
-          this.imageFileExtension
+        this.doAuthenticationOperation(
+          async () => {
+            return await this.service.register(
+              firstName,
+              lastName,
+              alias,
+              password,
+              this.imageBytes,
+              this.imageFileExtension
+            );
+          },
+          rememberMe,
+          () => {
+            this.view.navigate("/");
+          }
         );
-
-        this.view.updateUserInfo(user, user, authToken, rememberMe);
-        this.view.navigate("/");
       },
       "register user",
       () => {
