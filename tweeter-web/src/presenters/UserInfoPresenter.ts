@@ -10,16 +10,12 @@ export interface UserInfoView extends MessageView {
   setIsLoading: (loading: boolean) => void;
 }
 
-export class UserInfoPresenter extends Presenter {
+export class UserInfoPresenter extends Presenter<UserInfoView> {
   private followService: FollowService;
 
   public constructor(view: UserInfoView) {
     super(view);
     this.followService = new FollowService();
-  }
-
-  protected get view(): UserInfoView {
-    return super.view as UserInfoView;
   }
 
   public async setIsFollowerStatus(

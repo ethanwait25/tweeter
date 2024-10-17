@@ -17,7 +17,7 @@ export interface RegisterView extends View {
   setImageFileExtension: (extension: string) => void;
 }
 
-export class RegisterPresenter extends Presenter {
+export class RegisterPresenter extends Presenter<RegisterView> {
   private userService: UserService;
 
   private imageBytes: Uint8Array = new Uint8Array();
@@ -26,10 +26,6 @@ export class RegisterPresenter extends Presenter {
   constructor(view: RegisterView) {
     super(view);
     this.userService = new UserService();
-  }
-
-  protected get view(): RegisterView {
-    return super.view as RegisterView;
   }
 
   public async doRegister(firstName: string, lastName: string, alias: string, password: string, rememberMe: boolean) {

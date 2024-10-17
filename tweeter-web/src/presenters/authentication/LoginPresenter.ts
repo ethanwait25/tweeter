@@ -13,7 +13,7 @@ export interface LoginView extends View {
   navigate: (url: string) => void;
 }
 
-export class LoginPresenter extends Presenter {
+export class LoginPresenter extends Presenter<LoginView> {
   private userService: UserService;
   private originalUrl: string | undefined;
 
@@ -21,10 +21,6 @@ export class LoginPresenter extends Presenter {
     super(view)
     this.userService = new UserService();
     this.originalUrl = originalUrl;
-  }
-
-  protected get view(): LoginView {
-    return super.view as LoginView;
   }
 
   public async doLogin(alias: string, password: string, rememberMe: boolean) {
