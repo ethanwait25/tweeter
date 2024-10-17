@@ -28,34 +28,40 @@ export class RegisterPresenter extends Presenter<RegisterView> {
     this.userService = new UserService();
   }
 
-  public async doRegister(firstName: string, lastName: string, alias: string, password: string, rememberMe: boolean) {
-    try {
-      this.view.setIsLoading(true);
+  public async doRegister(
+    firstName: string,
+    lastName: string,
+    alias: string,
+    password: string,
+    rememberMe: boolean
+  ) {
+    this.doFailureReportingOperation(
+      async () => {
+        this.view.setIsLoading(true);
 
-      const [user, authToken] = await this.userService.register(
-        firstName,
-        lastName,
-        alias,
-        password,
-        this.imageBytes,
-        this.imageFileExtension
-      );
+        const [user, authToken] = await this.userService.register(
+          firstName,
+          lastName,
+          alias,
+          password,
+          this.imageBytes,
+          this.imageFileExtension
+        );
 
-      this.view.updateUserInfo(user, user, authToken, rememberMe);
-      this.view.navigate("/");
-    } catch (error) {
-      this.view.displayErrorMessage(
-        `Failed to register user because of exception: ${error}`
-      );
-    } finally {
-      this.view.setIsLoading(false);
-    }
+        this.view.updateUserInfo(user, user, authToken, rememberMe);
+        this.view.navigate("/");
+      },
+      "register user",
+      () => {
+        this.view.setIsLoading(false);
+      }
+    );
   }
 
   public handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     this.handleImageFile(file);
-  }
+  };
 
   private handleImageFile(file: File | undefined) {
     if (file) {

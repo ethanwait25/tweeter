@@ -20,7 +20,8 @@ export class Presenter<V extends View> {
 
   public async doFailureReportingOperation(
     operation: () => Promise<void>,
-    operationDescription: string
+    operationDescription: string,
+    finallyOperation?: () => void
   ) {
     try {
       await operation();
@@ -28,6 +29,10 @@ export class Presenter<V extends View> {
       this.view.displayErrorMessage(
         `Failed to ${operationDescription} because of exception: ${error}`
       );
+    } finally {
+      if (finallyOperation) {
+        finallyOperation();
+      }
     }
   }
 }
