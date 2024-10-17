@@ -1,21 +1,22 @@
 import { AuthToken, Status, User } from "tweeter-shared";
 import { StatusService } from "../model/service/StatusService";
+import { MessageView, Presenter } from "./Presenter";
 
-export interface PostStatusView {
+export interface PostStatusView extends MessageView {
   setPost: (post: string) => void;
-  displayErrorMessage: (message: string) => void;
-  displayInfoMessage: (message: string, duration: number) => void;
-  clearLastInfoMessage: () => void;
   setIsLoading: (loading: boolean) => void;
 }
 
-export class PostStatusPresenter {
-  private postStatusView: PostStatusView;
+export class PostStatusPresenter extends Presenter {
   private statusService: StatusService;
 
   public constructor(view: PostStatusView) {
+    super(view);
     this.statusService = new StatusService();
-    this.postStatusView = view;
+  }
+
+  protected get view(): PostStatusView {
+    return super.view as PostStatusView;
   }
 
   public async submitPost(
@@ -27,27 +28,27 @@ export class PostStatusPresenter {
     event.preventDefault();
 
     try {
-      this.postStatusView.setIsLoading(true);
-      this.postStatusView.displayInfoMessage("Posting status...", 0);
+      this.view.setIsLoading(true);
+      this.view.displayInfoMessage("Posting status...", 0);
 
       const status = new Status(post, currentUser!, Date.now());
 
       await this.statusService.postStatus(authToken!, status);
 
-      this.postStatusView.setPost("");
-      this.postStatusView.displayInfoMessage("Status posted!", 2000);
+      this.view.setPost("");
+      this.view.displayInfoMessage("Status posted!", 2000);
     } catch (error) {
-      this.postStatusView.displayErrorMessage(
+      this.view.displayErrorMessage(
         `Failed to post the status because of exception: ${error}`
       );
     } finally {
-      this.postStatusView.clearLastInfoMessage();
-      this.postStatusView.setIsLoading(false);
+      this.view.clearLastInfoMessage();
+      this.view.setIsLoading(false);
     }
   }
 
   public clearPost(event: React.MouseEvent) {
     event.preventDefault();
-    this.postStatusView.setPost("");
+    this.view.setPost("");
   };
 }

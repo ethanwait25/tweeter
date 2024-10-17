@@ -2,36 +2,39 @@ import { ChangeEvent } from "react";
 import { UserService } from "../../model/service/UserService";
 import { Buffer } from "buffer";
 import { User, AuthToken } from "tweeter-shared";
+import { Presenter, View } from "../Presenter";
 
-export interface RegisterView {
+export interface RegisterView extends View {
   updateUserInfo: (
     currentUser: User,
     displayedUser: User | null,
     authToken: AuthToken,
     remember: boolean
   ) => void;
-  displayErrorMessage: (message: string) => void;
   setIsLoading: (loading: boolean) => void;
   navigate: (url: string) => void;
   setImageUrl: (url: string) => void;
   setImageFileExtension: (extension: string) => void;
 }
 
-export class RegisterPresenter {
+export class RegisterPresenter extends Presenter {
   private userService: UserService;
-  private registerView: RegisterView;
 
   private imageBytes: Uint8Array = new Uint8Array();
   private imageFileExtension: string = "";
 
   constructor(view: RegisterView) {
-    this.registerView = view;
+    super(view);
     this.userService = new UserService();
+  }
+
+  protected get view(): RegisterView {
+    return super.view as RegisterView;
   }
 
   public async doRegister(firstName: string, lastName: string, alias: string, password: string, rememberMe: boolean) {
     try {
-      this.registerView.setIsLoading(true);
+      this.view.setIsLoading(true);
 
       const [user, authToken] = await this.userService.register(
         firstName,
@@ -42,14 +45,14 @@ export class RegisterPresenter {
         this.imageFileExtension
       );
 
-      this.registerView.updateUserInfo(user, user, authToken, rememberMe);
-      this.registerView.navigate("/");
+      this.view.updateUserInfo(user, user, authToken, rememberMe);
+      this.view.navigate("/");
     } catch (error) {
-      this.registerView.displayErrorMessage(
+      this.view.displayErrorMessage(
         `Failed to register user because of exception: ${error}`
       );
     } finally {
-      this.registerView.setIsLoading(false);
+      this.view.setIsLoading(false);
     }
   }
 
@@ -60,7 +63,7 @@ export class RegisterPresenter {
 
   private handleImageFile(file: File | undefined) {
     if (file) {
-      this.registerView.setImageUrl(URL.createObjectURL(file));
+      this.view.setImageUrl(URL.createObjectURL(file));
 
       const reader = new FileReader();
       reader.onload = (event: ProgressEvent<FileReader>) => {
@@ -83,10 +86,10 @@ export class RegisterPresenter {
       const fileExtension = this.getFileExtension(file);
       if (fileExtension) {
         this.imageFileExtension = fileExtension;
-        this.registerView.setImageFileExtension(fileExtension);
+        this.view.setImageFileExtension(fileExtension);
       }
     } else {
-      this.registerView.setImageUrl("");
+      this.view.setImageUrl("");
       this.imageBytes = new Uint8Array();
     }
   }

@@ -1,42 +1,47 @@
 import { AuthToken, User } from "tweeter-shared";
 import { UserService } from "../model/service/UserService";
+import { Presenter, View } from "./Presenter";
 
-export interface UserNavigationView {
-    displayErrorMessage: (message: string) => void;
-    setDisplayedUser: (user: User) => void;
+export interface UserNavigationView extends View {
+  setDisplayedUser: (user: User) => void;
 }
 
-export class UserNavigationPresenter {
-  private userNavigationView: UserNavigationView;
+export class UserNavigationPresenter extends Presenter {
   private userService: UserService;
 
   constructor(view: UserNavigationView) {
-    this.userNavigationView = view;
+    super(view);
     this.userService = new UserService();
   }
 
-  public async navigateToUser(event: React.MouseEvent, authToken: AuthToken | null, currentUser: User | null): Promise<void> {
+  protected get view(): UserNavigationView {
+    return super.view as UserNavigationView;
+  }
+
+  public async navigateToUser(
+    event: React.MouseEvent,
+    authToken: AuthToken | null,
+    currentUser: User | null
+  ): Promise<void> {
     event.preventDefault();
 
-    try {
+    this.doFailureReportingOperation(async () => {
       const alias = this.extractAlias(event.target.toString());
 
       const user = await this.userService.getUser(authToken!, alias);
 
       if (!!user) {
         if (currentUser!.equals(user)) {
-          this.userNavigationView.setDisplayedUser(currentUser!);
+          this.view.setDisplayedUser(currentUser!);
         } else {
-          this.userNavigationView.setDisplayedUser(user);
+          this.view.setDisplayedUser(user);
         }
       }
-    } catch (error) {
-      this.userNavigationView.displayErrorMessage(`Failed to get user because of exception: ${error}`);
-    }
-  };
+    }, "get user");
+  }
 
   private extractAlias(value: string): string {
     const index = value.indexOf("@");
     return value.substring(index);
-  };
+  }
 }
