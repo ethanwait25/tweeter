@@ -30,7 +30,10 @@ const StatusItem = (props: Props) => {
               -{" "}
               <Link
                 to={props.status.user.alias}
-                onClick={(event) => navigateToUser(event)}
+                onClick={(event) => {
+                  event.preventDefault();
+                  navigateToUser(event.target.toString());
+                }}
               >
                 {props.status.user.alias}
               </Link>

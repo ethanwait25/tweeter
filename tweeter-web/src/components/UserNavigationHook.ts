@@ -4,7 +4,7 @@ import { useState } from "react";
 import { UserNavigationPresenter, UserNavigationView } from "../presenters/UserNavigationPresenter";
 
 interface UserNavigation {
-  navigateToUser: (event: React.MouseEvent) => Promise<void>;
+  navigateToUser: (target: string) => Promise<void>;
 }
 
 const useUserNavigation = (): UserNavigation => {
@@ -18,8 +18,8 @@ const useUserNavigation = (): UserNavigation => {
 
   const [presenter] = useState(new UserNavigationPresenter(listener));
 
-  const navigateToUser = async (event: React.MouseEvent): Promise<void> => {
-    presenter.navigateToUser(event, authToken, currentUser);
+  const navigateToUser = async (target: string): Promise<void> => {
+    presenter.navigateToUser(target, authToken, currentUser);
   }
   
   return {

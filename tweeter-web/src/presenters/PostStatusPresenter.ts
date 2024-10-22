@@ -16,13 +16,10 @@ export class PostStatusPresenter extends Presenter<PostStatusView> {
   }
 
   public async submitPost(
-    event: React.MouseEvent,
     post: string,
     currentUser: User | null,
     authToken: AuthToken | null
   ) {
-    event.preventDefault();
-
     this.doFailureReportingOperation(
       async () => {
         this.view.setIsLoading(true);
@@ -43,8 +40,7 @@ export class PostStatusPresenter extends Presenter<PostStatusView> {
     );
   }
 
-  public clearPost(event: React.MouseEvent) {
-    event.preventDefault();
+  public clearPost() {
     this.view.setPost("");
   }
 }

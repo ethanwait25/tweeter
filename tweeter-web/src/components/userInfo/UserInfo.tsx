@@ -61,7 +61,10 @@ const UserInfo = () => {
                   Return to{" "}
                   <Link
                     to={""}
-                    onClick={(event) => presenter.switchToLoggedInUser(event, currentUser)}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      presenter.switchToLoggedInUser(currentUser)
+                    }}
                   >
                     logged in user
                   </Link>
@@ -87,7 +90,10 @@ const UserInfo = () => {
                       className="btn btn-md btn-secondary me-1"
                       type="submit"
                       style={{ width: "6em" }}
-                      onClick={(event) => presenter.unfollowDisplayedUser(event, displayedUser, authToken)}
+                      onClick={(event) => {
+                        event.preventDefault();
+                        presenter.unfollowDisplayedUser(displayedUser, authToken);
+                      }}
                     >
                       {isLoading ? (
                         <span
@@ -105,7 +111,10 @@ const UserInfo = () => {
                       className="btn btn-md btn-primary me-1"
                       type="submit"
                       style={{ width: "6em" }}
-                      onClick={(event) => presenter.followDisplayedUser(event, displayedUser, authToken)}
+                      onClick={(event) => {
+                        event.preventDefault();
+                        presenter.followDisplayedUser(displayedUser, authToken);
+                      }}
                     >
                       {isLoading ? (
                         <span

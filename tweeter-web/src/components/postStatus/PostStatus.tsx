@@ -48,7 +48,10 @@ const PostStatus = () => {
             type="button"
             disabled={checkButtonStatus()}
             style={{ width: "8em" }}
-            onClick={(event) => presenter.submitPost(event, post, currentUser, authToken)}
+            onClick={(event) => {
+              event.preventDefault();
+              presenter.submitPost(post, currentUser, authToken);
+            }}
           >
             {isLoading ? (
               <span
@@ -65,7 +68,10 @@ const PostStatus = () => {
             className="btn btn-md btn-secondary"
             type="button"
             disabled={checkButtonStatus()}
-            onClick={(event) => presenter.clearPost(event)}
+            onClick={(event) => {
+              event.preventDefault();
+              presenter.clearPost();
+            }}
           >
             Clear
           </button>

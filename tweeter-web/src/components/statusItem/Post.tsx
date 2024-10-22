@@ -16,7 +16,10 @@ const Post = (props: Props) => {
           <Link
             key={index}
             to={segment.text}
-            onClick={(event) => navigateToUser(event)}
+            onClick={(event) => {
+              event.preventDefault();
+              navigateToUser(event.target.toString());
+            }}
           >
             {segment.text}
           </Link>

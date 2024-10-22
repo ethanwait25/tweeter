@@ -29,7 +29,10 @@ const UserItem = (props: Props) => {
               -{" "}
               <Link
                 to={props.value.alias}
-                onClick={(event) => navigateToUser(event)}
+                onClick={(event) => {
+                  event.preventDefault();
+                  navigateToUser(event.target.toString());
+                }}
               >
                 {props.value.alias}
               </Link>

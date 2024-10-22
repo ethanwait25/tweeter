@@ -54,21 +54,14 @@ export class UserInfoPresenter extends Presenter<UserInfoView> {
     }, "get followers count");
   }
 
-  public switchToLoggedInUser(
-    event: React.MouseEvent,
-    currentUser: User
-  ): void {
-    event.preventDefault();
+  public switchToLoggedInUser(currentUser: User): void {
     this.view.setDisplayedUser(currentUser!);
   }
 
   public async followDisplayedUser(
-    event: React.MouseEvent,
     displayedUser: User,
     authToken: AuthToken
   ): Promise<void> {
-    event.preventDefault();
-
     this.doFailureReportingOperation(
       async () => {
         this.view.setIsLoading(true);
@@ -92,12 +85,9 @@ export class UserInfoPresenter extends Presenter<UserInfoView> {
   }
 
   public async unfollowDisplayedUser(
-    event: React.MouseEvent,
     displayedUser: User,
     authToken: AuthToken
   ): Promise<void> {
-    event.preventDefault();
-
     this.doFailureReportingOperation(
       async () => {
         this.view.setIsLoading(true);
