@@ -5,6 +5,9 @@ set -e
 
 source .server
 
+# set region
+export AWS_DEFAULT_REGION=$AWS_REGION
+
 aws s3 cp dist.zip s3://$BUCKET/code/lambdalist.zip
 
 # using -e lets us use escape characters such as \n if the output is in quotation marks

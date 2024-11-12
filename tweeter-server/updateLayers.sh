@@ -5,6 +5,9 @@
 
 source .server
 
+# set region
+export AWS_DEFAULT_REGION=$AWS_REGION
+
 i=1
 PID=0
 pids=()
