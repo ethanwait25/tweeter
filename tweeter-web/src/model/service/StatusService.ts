@@ -10,7 +10,7 @@ export class StatusService {
     pageSize: number,
     lastItem: Status | null
   ): Promise<[Status[], boolean]> {
-    return this.facade.getMoreFeedItems({
+    return await this.facade.getMoreFeedItems({
       token: authToken.token,
       userAlias: userAlias,
       pageSize: pageSize,
@@ -24,7 +24,7 @@ export class StatusService {
     pageSize: number,
     lastItem: Status | null
   ): Promise<[Status[], boolean]> {
-    return this.facade.getMoreStoryItems({
+    return await this.facade.getMoreStoryItems({
       token: authToken.token,
       userAlias: userAlias,
       pageSize: pageSize,
@@ -36,7 +36,7 @@ export class StatusService {
     authToken: AuthToken,
     newStatus: Status
   ): Promise<void> {
-    return this.facade.postStatus({
+    return await this.facade.postStatus({
       token: authToken.token,
       dto: newStatus.dto,
     });

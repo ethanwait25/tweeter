@@ -11,6 +11,13 @@ import {
   CountsResponse,
   StatusDTO,
   Status,
+  CredentialsRequest,
+  UserTokenResponse,
+  AuthToken,
+  RegisterRequest,
+  GetUserRequest,
+  GetUserResponse,
+  TokenRequest,
 } from "tweeter-shared";
 import { ClientCommunicator } from "./ClientCommunicator";
 import { URL } from "../../../serverconfig.json";
@@ -141,6 +148,62 @@ export class ServerFacade {
       DTORequest<StatusDTO>,
       TweeterResponse
     >(request, "/status/create");
+
+    if (response.success) {
+      return;
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? undefined);
+    }
+  }
+
+  public async login(request: CredentialsRequest): Promise<[User, AuthToken]> {
+    const response = await this.clientCommunicator.doPost<
+      CredentialsRequest,
+      UserTokenResponse
+    >(request, "/auth/login");
+
+    if (response.success) {
+      return [User.fromDTO(response.user) as User, AuthToken.fromDTO(response.authToken) as AuthToken]
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? undefined);
+    }
+  }
+
+  public async register(request: RegisterRequest): Promise<[User, AuthToken]> {
+    const response = await this.clientCommunicator.doPost<
+      RegisterRequest,
+      UserTokenResponse
+    >(request, "/auth/register");
+
+    if (response.success) {
+      return [User.fromDTO(response.user) as User, AuthToken.fromDTO(response.authToken) as AuthToken]
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? undefined);
+    }
+  }
+
+  public async getUser(request: GetUserRequest): Promise<User | null> {
+    const response = await this.clientCommunicator.doPost<
+      GetUserRequest,
+      GetUserResponse
+    >(request, "/user/query");
+
+    if (response.success) {
+      return User.fromDTO(response.user) as User;
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? undefined);
+    }
+  }
+
+  public async logout(request: TokenRequest): Promise<void> {
+    const response = await this.clientCommunicator.doPost<
+      TokenRequest,
+      TweeterResponse
+    >(request, "/auth/logout");
 
     if (response.success) {
       return;

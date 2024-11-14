@@ -10,7 +10,7 @@ export class FollowService {
     pageSize: number,
     lastItem: User | null
   ): Promise<[User[], boolean]> {
-    return this.facade.getMoreFollowers({
+    return await this.facade.getMoreFollowers({
       token: authToken.token,
       userAlias: userAlias,
       pageSize: pageSize,
@@ -24,7 +24,7 @@ export class FollowService {
     pageSize: number,
     lastItem: User | null
   ): Promise<[User[], boolean]> {
-    return this.facade.getMoreFollowees({
+    return await this.facade.getMoreFollowees({
       token: authToken.token,
       userAlias: userAlias,
       pageSize: pageSize,
@@ -37,7 +37,7 @@ export class FollowService {
     user: User,
     selectedUser: User
   ): Promise<boolean> {
-    return this.facade.getIsFollowerStatus({
+    return await this.facade.getIsFollowerStatus({
       token: authToken.token,
       user: user.dto,
       selectedUser: selectedUser.dto
@@ -48,7 +48,7 @@ export class FollowService {
     authToken: AuthToken,
     user: User
   ): Promise<number> {
-    return this.facade.getFolloweeCount({
+    return await this.facade.getFolloweeCount({
       token: authToken.token,
       dto: user.dto
     });
@@ -58,7 +58,7 @@ export class FollowService {
     authToken: AuthToken,
     user: User
   ): Promise<number> {
-    return this.facade.getFollowerCount({
+    return await this.facade.getFollowerCount({
       token: authToken.token,
       dto: user.dto
     });
@@ -68,7 +68,7 @@ export class FollowService {
     authToken: AuthToken,
     userToFollow: User
   ): Promise<[followerCount: number, followeeCount: number]> {
-    return this.facade.follow({
+    return await this.facade.follow({
       token: authToken.token,
       dto: userToFollow.dto
     });
@@ -78,7 +78,7 @@ export class FollowService {
     authToken: AuthToken,
     userToUnfollow: User
   ): Promise<[followerCount: number, followeeCount: number]> {
-    return this.facade.unfollow({
+    return await this.facade.unfollow({
       token: authToken.token,
       dto: userToUnfollow.dto
     });
