@@ -1,5 +1,5 @@
 import { Buffer } from "buffer";
-import { User, AuthToken, FakeData } from "tweeter-shared";
+import { User, AuthToken } from "tweeter-shared";
 import { ServerFacade } from "./ServerFacade";
 
 export class UserService {
@@ -37,7 +37,7 @@ export class UserService {
       password: password,
       firstName: firstName,
       lastName: lastName,
-      userImageBytes: userImageBytes,
+      userImageBytes: imageStringBase64,
       imageFileExtension: imageFileExtension
     });
 
