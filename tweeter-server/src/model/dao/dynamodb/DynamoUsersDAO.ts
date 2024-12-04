@@ -1,7 +1,7 @@
 import { User } from "tweeter-shared";
 import { UsersDAO } from "../UsersDAO";
 
-export class DynamoStoriesDAO implements UsersDAO {
+export class DynamoUsersDAO implements UsersDAO {
     createUser(firstName: string, lastName: string, alias: string, password: string): Promise<User> {
         // Implementation here
         return Promise.resolve({} as User);

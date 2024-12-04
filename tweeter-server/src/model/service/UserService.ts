@@ -1,8 +1,11 @@
-import { Buffer } from "buffer";
-import { User, FakeData, UserDTO, AuthToken } from "tweeter-shared";
+import { FakeData, UserDTO } from "tweeter-shared";
 import { AuthTokenDTO } from "tweeter-shared/dist/model/dto/AuthTokenDTO";
+import { DatabaseFactory } from "../dao/DatabaseFactory";
 
 export class UserService {
+  
+  public constructor(private dbfactory: DatabaseFactory) {}
+
   public async login(
     alias: string,
     password: string

@@ -1,6 +1,10 @@
-import { AuthToken, FakeData, User, UserDTO } from "tweeter-shared";
+import { FakeData, User, UserDTO } from "tweeter-shared";
+import { DatabaseFactory } from "../dao/DatabaseFactory";
 
 export class FollowService {
+
+  public constructor(private dbfactory: DatabaseFactory) {}
+
   public async loadMoreFollowers(
     token: string,
     userAlias: string,
