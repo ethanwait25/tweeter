@@ -1,4 +1,4 @@
-import { FakeData, Status, StatusDTO } from "tweeter-shared";
+import { StatusDTO } from "tweeter-shared";
 import { DatabaseFactory } from "../dao/DatabaseFactory";
 
 export class StatusService {

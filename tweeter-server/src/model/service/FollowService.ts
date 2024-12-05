@@ -1,4 +1,4 @@
-import { FakeData, User, UserDTO } from "tweeter-shared";
+import { UserDTO } from "tweeter-shared";
 import { DatabaseFactory } from "../dao/DatabaseFactory";
 
 export class FollowService {
