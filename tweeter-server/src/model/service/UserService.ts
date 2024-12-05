@@ -1,6 +1,8 @@
-import { UserDTO } from "tweeter-shared";
+import { AuthToken, UserDTO } from "tweeter-shared";
 import { AuthTokenDTO } from "tweeter-shared/dist/model/dto/AuthTokenDTO";
 import { DatabaseFactory } from "../dao/DatabaseFactory";
+
+var bcrypt = require('bcryptjs');
 
 export class UserService {
 
@@ -21,10 +23,14 @@ export class UserService {
     const user = await this.usersDAO.getUserWithCredentials(alias, password);
 
     if (user === null) {
-      throw new Error("Invalid alias or password");
+      throw new Error("[Bad Request]: Invalid alias or password");
     }
 
-    const authToken = await this.authsDAO.createAuth(alias);
+    const imageUrl = this.profileImageDAO.getImageUrl(user.imageUrl);
+    user.imageUrl = imageUrl;
+
+    const authToken = AuthToken.Generate();
+    await this.authsDAO.createAuth(authToken, alias);
     return [user.dto, authToken.dto];
   }
 
@@ -36,16 +42,23 @@ export class UserService {
     userImageBytes: string,
     imageFileExtension: string
   ): Promise<[UserDTO, AuthTokenDTO]> {
-    const user = await this.usersDAO.createUser(firstName, lastName, alias, password);
-
-    if (user === null) {
-      throw new Error("Invalid registration");
+    const existingUser = await this.usersDAO.getUserByAlias(alias);
+    if (existingUser) {
+      throw new Error("[Bad Request]: User already exists");
     }
 
+    const hashedPassword = bcrypt.hashSync(password);
+    await this.usersDAO.createUser(firstName, lastName, alias, hashedPassword, imageFileExtension);
     await this.profileImageDAO.uploadImage(alias, userImageBytes, imageFileExtension);
 
-    const authToken = await this.authsDAO.createAuth(alias);
-    return [user.dto, authToken.dto];
+    const authToken = AuthToken.Generate();
+    await this.authsDAO.createAuth(authToken, alias);
+    const user = await this.usersDAO.getUserByAlias(alias);
+
+    const imageUrl = this.profileImageDAO.getImageUrl(user!.imageUrl);
+    user!.imageUrl = imageUrl;
+
+    return [user!.dto, authToken.dto];
   }
 
   public async getUser (
@@ -64,7 +77,7 @@ export class UserService {
   private async validateToken(token: string): Promise<void> {
     const authToken = await this.authsDAO.getAuth(token);
     if (!authToken) {
-      throw new Error("Invalid token");
+      throw new Error("[Bad Request]: Invalid token");
     }
   }
 }

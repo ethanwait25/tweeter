@@ -8,6 +8,9 @@
   "author": "JWilkerson",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/lib-dynamodb": "^3.705.0",
+    "@types/bcryptjs": "^2.4.6",
+    "bcryptjs": "^2.4.3",
     "rimraf": "^5.0.5",
     "vite-plugin-dts": "^3.7.3"
   }

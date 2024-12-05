@@ -3,13 +3,12 @@ import { FollowsDAO } from "../FollowsDAO";
 
 export class DynamoFollowsDAO implements FollowsDAO {
     getFollowers(alias: string, pageSize: number, lastFollowerAlias?: string): Promise<[UserDTO[], boolean]> {
-        // Implementation here
-        return Promise.resolve([]);
+        return Promise.resolve({} as any);
     }
 
     getFollowees(alias: string, pageSize: number, lastFolloweeAlias?: string): Promise<[UserDTO[], boolean]> {
         // Implementation here
-        return Promise.resolve([]);
+        return Promise.resolve({} as any);
     }
 
     isFollower(userAlias: string, selectedUserAlias: string): Promise<boolean> {

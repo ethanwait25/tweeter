@@ -1,39 +1,50 @@
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { ObjectCannedACL } from "@aws-sdk/client-s3";
 import { ProfileImageDAO } from "../ProfileImageDAO";
 
 export class S3ProfileImageDAO implements ProfileImageDAO {
-    async uploadImage(
-        userAlias: string,
-        imageStringBase64Encoded: string,
-        imageFileExtension: string
-      ): Promise<string> {
-        let decodedImageBuffer: Buffer = Buffer.from(
-          imageStringBase64Encoded,
-          "base64"
-        );
-        const s3Params = {
-          Bucket: BUCKET,
-          Key: "image/" + userAlias + "." + imageFileExtension,
-          Body: decodedImageBuffer,
-          ContentType: "image/png",
-          ACL: ObjectCannedACL.public_read,
-        };
-        const c = new PutObjectCommand(s3Params);
-        const client = new S3Client({ region: REGION });
-        try {
-          await client.send(c);
-          return (
-          `https://${BUCKET}.s3.${REGION}.amazonaws.com/image/${fileName}`
-          );
-        } catch (error) {
-          throw Error("s3 put image failed with: " + error);
-        }
-      }
+  private readonly REGION = "us-east-2";
+  private readonly BUCKET = "ewait-tweeter-340-profiles";
 
-    deleteImage(url: string): Promise<void> {
-        throw new Error("Method not implemented.");
+  async uploadImage(
+    userAlias: string,
+    imageStringBase64Encoded: string,
+    imageFileExtension: string
+  ): Promise<string> {
+    let decodedImageBuffer: Buffer = Buffer.from(
+      imageStringBase64Encoded,
+      "base64"
+    );
+    // get first letter
+    const fileName =
+      userAlias.charAt(0).toLowerCase() +
+      "/" +
+      userAlias +
+      "." +
+      imageFileExtension;
+    const s3Params = {
+      Bucket: this.BUCKET,
+      Key: fileName,
+      Body: decodedImageBuffer,
+      ContentType: `image/${imageFileExtension}`,
+    };
+    const c = new PutObjectCommand(s3Params);
+    const client = new S3Client({ region: this.REGION });
+    try {
+      await client.send(c);
+      return `https://${this.BUCKET}.s3.${this.REGION}.amazonaws.com/${fileName}`;
+    } catch (error) {
+      throw Error("s3 put image failed with: " + error);
     }
+  }
 
-    getImageUrl(userAlias: string): string {
-        throw new Error("Method not implemented.");
-    }
+  async deleteImage(url: string): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+
+  getImageUrl(fileName: string): string {
+    return `https://${this.BUCKET}.s3.${this.REGION}.amazonaws.com/${
+      fileName.charAt(0).toLowerCase() + "/" + fileName
+    }`;
+  }
 }
