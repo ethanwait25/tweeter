@@ -3,21 +3,29 @@ import { AuthTokenDTO } from "tweeter-shared/dist/model/dto/AuthTokenDTO";
 import { DatabaseFactory } from "../dao/DatabaseFactory";
 
 export class UserService {
-  
-  public constructor(private dbfactory: DatabaseFactory) {}
+
+  private usersDAO;
+  private authsDAO;
+  private profileImageDAO;
+
+  public constructor(dbfactory: DatabaseFactory) {
+    this.usersDAO = dbfactory.createUsersDAO();
+    this.authsDAO = dbfactory.createAuthsDAO();
+    this.profileImageDAO = dbfactory.createProfileImageDAO();
+  }
 
   public async login(
     alias: string,
     password: string
   ): Promise<[UserDTO, AuthTokenDTO]> {
-    // TODO: Replace with the result of calling the server
-    const user = FakeData.instance.firstUser;
+    const user = await this.usersDAO.getUserWithCredentials(alias, password);
 
     if (user === null) {
       throw new Error("Invalid alias or password");
     }
 
-    return [user.dto, FakeData.instance.authToken.dto];
+    const authToken = await this.authsDAO.createAuth(alias);
+    return [user.dto, authToken.dto];
   }
 
   public async register(
@@ -28,29 +36,35 @@ export class UserService {
     userImageBytes: string,
     imageFileExtension: string
   ): Promise<[UserDTO, AuthTokenDTO]> {
-    // Converts back to Uint8Array
-    // const uint8Array: Uint8Array = new Uint8Array(Buffer.from(base64String, "base64"));
-
-    // TODO: Replace with the result of calling the server
-    const user = FakeData.instance.firstUser;
+    const user = await this.usersDAO.createUser(firstName, lastName, alias, password);
 
     if (user === null) {
       throw new Error("Invalid registration");
     }
 
-    return [user.dto, FakeData.instance.authToken.dto];
+    await this.profileImageDAO.uploadImage(alias, userImageBytes, imageFileExtension);
+
+    const authToken = await this.authsDAO.createAuth(alias);
+    return [user.dto, authToken.dto];
   }
 
   public async getUser (
     token: string,
     alias: string
   ): Promise<UserDTO | null> {
-    let dto = FakeData.instance.findUserByAlias(alias);
+    await this.validateToken(token);
+    const dto = await this.usersDAO.getUserByAlias(alias);
     return dto === null ? null : dto.dto;
   };
 
   public async logout(token: string): Promise<void> {
-    // Pause so we can see the logging out message. Delete when the call to the server is implemented.
-    await new Promise((res) => setTimeout(res, 1000));
+    await this.authsDAO.deleteAuth(token);
   };
+
+  private async validateToken(token: string): Promise<void> {
+    const authToken = await this.authsDAO.getAuth(token);
+    if (!authToken) {
+      throw new Error("Invalid token");
+    }
+  }
 }

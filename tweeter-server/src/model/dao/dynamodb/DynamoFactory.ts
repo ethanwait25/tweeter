@@ -1,4 +1,5 @@
 import { DatabaseFactory } from "../DatabaseFactory";
+import { S3ProfileImageDAO } from "./S3ProfileImageDAO";
 import { DynamoAuthsDAO } from "./DynamoAuthsDAO";
 import { DynamoFeedsDAO } from "./DynamoFeedsDAO";
 import { DynamoFollowsDAO } from "./DynamoFollowsDAO";
@@ -24,5 +25,9 @@ export class DynamoFactory implements DatabaseFactory {
 
     createUsersDAO(): DynamoUsersDAO {
         return new DynamoUsersDAO();
+    }
+
+    createProfileImageDAO(): S3ProfileImageDAO {
+        return new S3ProfileImageDAO();
     }
 }

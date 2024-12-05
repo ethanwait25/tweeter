@@ -1,9 +1,20 @@
+import { AuthToken } from "tweeter-shared";
 import { AuthsDAO } from "../AuthsDAO";
 
 export class DynamoAuthsDAO implements AuthsDAO {
-    verifyAuth(alias: string, password: string): Promise<boolean> {
+    getAuth(token: string): Promise<AuthToken> {
         // Implementation here
-        return Promise.resolve(true);    
+        return Promise.resolve({} as AuthToken); 
+    }
+
+    createAuth(alias: string): Promise<AuthToken> {
+        // Implementation here
+        return Promise.resolve({} as AuthToken);
+    }
+
+    deleteAuth(token: string): Promise<void> {
+        // Implementation here
+        return Promise.resolve();
     }
 
     getAliasFromToken(token: string): Promise<string | null> {

@@ -1,4 +1,6 @@
+import { StatusDTO } from "tweeter-shared";
+
 export interface StoriesDAO {
-    getStoryItems(alias: string, pageSize: number, lastItem: string | null): Promise<[string[], boolean]>;
-    postStoryItem(alias: string, newStory: string): Promise<void>;
+    getStoryItems(alias: string, pageSize: number, lastItem: StatusDTO | null): Promise<[StatusDTO[], boolean]>;
+    postStoryItem(story: StatusDTO): Promise<void>;
 }

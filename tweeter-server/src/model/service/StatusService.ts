@@ -3,7 +3,15 @@ import { DatabaseFactory } from "../dao/DatabaseFactory";
 
 export class StatusService {
 
-  public constructor(private dbfactory: DatabaseFactory) {}
+  private feedsDAO;
+  private storiesDAO;
+  private authsDAO;
+
+  public constructor(dbfactory: DatabaseFactory) {
+    this.feedsDAO = dbfactory.createFeedsDAO();
+    this.storiesDAO = dbfactory.createStoriesDAO();
+    this.authsDAO = dbfactory.createAuthsDAO();
+  }
 
   public async loadMoreFeedItems(
     token: string,
@@ -11,8 +19,8 @@ export class StatusService {
     pageSize: number,
     lastItem: StatusDTO | null
   ): Promise<[StatusDTO[], boolean]> {
-    // TODO: Replace with the result of calling server
-    return this.getFakeData(lastItem, pageSize);
+    await this.validateToken(token);
+    return await this.feedsDAO.getFeedItems(userAlias, pageSize, lastItem);
   }
 
   public async loadMoreStoryItems(
@@ -21,24 +29,23 @@ export class StatusService {
     pageSize: number,
     lastItem: StatusDTO | null
   ): Promise<[StatusDTO[], boolean]> {
-    // TODO: Replace with the result of calling server
-    return this.getFakeData(lastItem, pageSize);
+    await this.validateToken(token);
+    return await this.storiesDAO.getStoryItems(userAlias, pageSize, lastItem);
   }
 
   public async postStatus(
     token: string,
     newStatus: StatusDTO
   ): Promise<void> {
-    // Pause so we can see posting message. Remove when connected to the server
-    await new Promise((f) => setTimeout(f, 2000));
-
-    // TODO: Call the server to post the status
+    await this.validateToken(token);
+    return await this.storiesDAO.postStoryItem(newStatus);
   }
 
-  private async getFakeData(lastItem: StatusDTO | null, pageSize: number): Promise<[StatusDTO[], boolean]> {
-    const [items, hasMore] = FakeData.instance.getPageOfStatuses(Status.fromDTO(lastItem), pageSize);
-    const dtos = items.map((status) => status.dto);
-    return [dtos, hasMore];
+  private async validateToken(token: string): Promise<void> {
+    const authToken = await this.authsDAO.getAuth(token);
+    if (!authToken) {
+      throw new Error("Invalid token");
+    }
   }
 
 }

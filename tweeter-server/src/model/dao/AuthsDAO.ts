@@ -1,4 +1,8 @@
+import { AuthToken } from "tweeter-shared";
+
 export interface AuthsDAO {
-    verifyAuth(alias: string, password: string): Promise<boolean>;
+    getAuth(token: string): Promise<AuthToken>;
+    createAuth(alias: string): Promise<AuthToken>;
+    deleteAuth(token: string): Promise<void>;
     getAliasFromToken(token: string): Promise<string | null>;
 }

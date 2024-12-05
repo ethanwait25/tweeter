@@ -1,12 +1,13 @@
+import { UserDTO } from "tweeter-shared";
 import { FollowsDAO } from "../FollowsDAO";
 
 export class DynamoFollowsDAO implements FollowsDAO {
-    getFollowers(alias: string, pageSize: number, lastFollowerAlias?: string): Promise<string[]> {
+    getFollowers(alias: string, pageSize: number, lastFollowerAlias?: string): Promise<[UserDTO[], boolean]> {
         // Implementation here
         return Promise.resolve([]);
     }
 
-    getFollowees(alias: string, pageSize: number, lastFolloweeAlias?: string): Promise<string[]> {
+    getFollowees(alias: string, pageSize: number, lastFolloweeAlias?: string): Promise<[UserDTO[], boolean]> {
         // Implementation here
         return Promise.resolve([]);
     }

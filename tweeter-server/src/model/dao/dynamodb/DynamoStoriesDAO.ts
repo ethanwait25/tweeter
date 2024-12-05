@@ -1,12 +1,13 @@
+import { StatusDTO } from "tweeter-shared";
 import { StoriesDAO } from "../StoriesDAO";
 
 export class DynamoStoriesDAO implements StoriesDAO {
-    getStoryItems(alias: string, pageSize: number, lastItem: string | null): Promise<[string[], boolean]> {
+    getStoryItems(alias: string, pageSize: number, lastItem: StatusDTO | null): Promise<[StatusDTO[], boolean]> {
         // Implementation here
         return Promise.resolve([[], false]);
     }
 
-    postStoryItem(alias: string, newStory: string): Promise<void> {
+    postStoryItem(story: StatusDTO): Promise<void> {
         // Implementation here
         return Promise.resolve();
     }
