@@ -1,9 +1,6 @@
 import {
-  DeleteCommand,
   GetCommand,
   PutCommand,
-  QueryCommand,
-  UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
 
 import { User } from "tweeter-shared";

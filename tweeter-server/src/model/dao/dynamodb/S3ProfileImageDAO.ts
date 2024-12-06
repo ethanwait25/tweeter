@@ -15,9 +15,8 @@ export class S3ProfileImageDAO implements ProfileImageDAO {
       imageStringBase64Encoded,
       "base64"
     );
-    // get first letter
     const fileName =
-      userAlias.charAt(0).toLowerCase() +
+      userAlias.charAt(1).toLowerCase() +
       "/" +
       userAlias +
       "." +
@@ -44,7 +43,7 @@ export class S3ProfileImageDAO implements ProfileImageDAO {
 
   getImageUrl(fileName: string): string {
     return `https://${this.BUCKET}.s3.${this.REGION}.amazonaws.com/${
-      fileName.charAt(0).toLowerCase() + "/" + fileName
+      fileName.charAt(1).toLowerCase() + "/" + fileName
     }`;
   }
 }

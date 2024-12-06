@@ -31,6 +31,7 @@ export class AuthenticationPresenter extends Presenter<AuthenticationView> {
     navigate: () => void
   ): Promise<void> {
     this.view.setIsLoading(true);
+    console.log("doing authentication operation");
     const [user, authToken] = await operation();
     this.view.updateUserInfo(user, user, authToken, rememberMe);
     navigate();

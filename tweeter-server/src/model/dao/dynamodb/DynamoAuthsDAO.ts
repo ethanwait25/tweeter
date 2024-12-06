@@ -2,8 +2,6 @@ import {
   DeleteCommand,
   GetCommand,
   PutCommand,
-  QueryCommand,
-  UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
 
 import { AuthToken } from "tweeter-shared";
@@ -35,6 +33,7 @@ export class DynamoAuthsDAO extends DynamoDAO implements AuthsDAO {
 
         if (!this.checkIsLivingToken(data.Item[this.timestampAttrName])) {
             console.error(`Token ${token} is expired`);
+            await this.deleteAuth(token);
             return null;
         }
 
@@ -99,6 +98,7 @@ export class DynamoAuthsDAO extends DynamoDAO implements AuthsDAO {
 
         if (!this.checkIsLivingToken(data.Item[this.timestampAttrName])) {
             console.error(`Token ${token} is expired`);
+            await this.deleteAuth(token);
             return null;
         }
 

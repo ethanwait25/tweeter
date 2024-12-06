@@ -24,8 +24,11 @@ export class Presenter<V extends View> {
     finallyOperation?: () => void
   ) {
     try {
+      console.log("Doing the operation");
       await operation();
+      console.log("Operation completed successfully");
     } catch (error) {
+      console.log("Made it to catch block");
       this.view.displayErrorMessage(
         `Failed to ${operationDescription} because of exception: ${(error as Error).message}`
       );
