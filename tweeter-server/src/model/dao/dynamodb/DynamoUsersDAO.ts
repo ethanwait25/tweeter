@@ -19,6 +19,8 @@ export class DynamoUsersDAO extends DynamoDAO implements UsersDAO {
   readonly lastNameAttrName = "lastName";
   readonly passwordAttrName = "password";
   readonly imageUrlAttrName = "imageUrl";
+  readonly followerCountAttr = "followers";
+  readonly followeeCountAttr = "followees";
 
   constructor() {
     super();
@@ -39,6 +41,8 @@ export class DynamoUsersDAO extends DynamoDAO implements UsersDAO {
         [this.firstNameAttrName]: firstName,
         [this.lastNameAttrName]: lastName,
         [this.imageUrlAttrName]: alias + "." + profileExtension,
+        [this.followerCountAttr]: 0,
+        [this.followeeCountAttr]: 0,
       },
     };
 
@@ -47,7 +51,7 @@ export class DynamoUsersDAO extends DynamoDAO implements UsersDAO {
       console.log(`User ${alias} created successfully`);
     } catch (e) {
       console.error(`Could not create user ${alias}: ${e}`);
-      throw new Error("Could not create user");
+      throw new Error(`[Server Error]: Could not create user ${alias}:` + e);
     }
   }
 
@@ -76,7 +80,7 @@ export class DynamoUsersDAO extends DynamoDAO implements UsersDAO {
       console.error(`Could not find user ${alias}`);
       return null;
     } catch (e) {
-      throw new Error("Could not find user:" + e);
+      throw new Error(`[Server Error]: Could not find user ${alias}:` + e);
     }
   }
 
@@ -102,7 +106,7 @@ export class DynamoUsersDAO extends DynamoDAO implements UsersDAO {
       console.error(`Could not find user ${alias}`);
       return null;
     } catch (e) {
-      throw new Error("Could not find user:" + e);
+      throw new Error(`[Server Error]: Could not find user ${alias}:` + e);
     }
   }
 }

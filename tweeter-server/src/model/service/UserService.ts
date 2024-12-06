@@ -67,7 +67,11 @@ export class UserService {
   ): Promise<UserDTO | null> {
     await this.validateToken(token);
     const dto = await this.usersDAO.getUserByAlias(alias);
-    return dto === null ? null : dto.dto;
+    if (dto) {
+      dto.imageUrl = this.profileImageDAO.getImageUrl(dto.imageUrl);
+      return dto.dto;
+    }
+    return null;
   };
 
   public async logout(token: string): Promise<void> {

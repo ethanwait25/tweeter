@@ -44,7 +44,7 @@ export class StatusService {
   private async validateToken(token: string): Promise<void> {
     const authToken = await this.authsDAO.getAuth(token);
     if (!authToken) {
-      throw new Error("Invalid token");
+      throw new Error("[Bad Request]: Invalid token");
     }
   }
 
