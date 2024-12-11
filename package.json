@@ -8,6 +8,7 @@
   "author": "JWilkerson",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-sqs": "^3.709.0",
     "@aws-sdk/lib-dynamodb": "^3.705.0",
     "@types/bcryptjs": "^2.4.6",
     "bcryptjs": "^2.4.3",

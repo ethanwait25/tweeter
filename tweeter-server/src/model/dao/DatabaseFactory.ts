@@ -2,6 +2,7 @@ import { AuthsDAO } from "./AuthsDAO";
 import { FeedsDAO } from "./FeedsDAO";
 import { FollowsDAO } from "./FollowsDAO";
 import { ProfileImageDAO } from "./ProfileImageDAO";
+import { QueueDAO } from "./QueueDAO";
 import { StoriesDAO } from "./StoriesDAO";
 import { UsersDAO } from "./UsersDAO";
 
@@ -12,4 +13,5 @@ export interface DatabaseFactory {
     createStoriesDAO(): StoriesDAO;
     createUsersDAO(): UsersDAO;
     createProfileImageDAO(): ProfileImageDAO;
+    createQueueDAO(): QueueDAO;
 }

@@ -1,5 +1,6 @@
 import {
-  PutCommand,
+  BatchWriteCommand,
+  BatchWriteCommandInput,
   QueryCommand,
 } from "@aws-sdk/lib-dynamodb";
 
@@ -18,25 +19,46 @@ export class DynamoFeedsDAO extends DynamoDAO implements FeedsDAO {
     super();
   }
 
-  async addFeedItem(alias: string, status: StatusDTO): Promise<void> {
-    const params = {
-      TableName: this.tableName,
-      Item: {
-        [this.aliasAttrName]: alias,
-        [this.timestampAttrName]: status.timestamp,
-        [this.postAttrName]: status.post,
-        [this.authorAttrName]: status.user.alias,
-      },
-    };
+  async addStatusToFeeds(followers: string[], status: StatusDTO): Promise<void> {
+    const MAX_ITEMS = 25;
+  
+    const batches = [];
+    for (let i = 0; i < followers.length; i += MAX_ITEMS) {
+      batches.push(followers.slice(i, i + MAX_ITEMS));
+    }
+  
+    for (const batch of batches) {
+      const params: BatchWriteCommandInput = {
+        RequestItems: {
+          [this.tableName]: followers.map(follower => ({
+            PutRequest: {
+              Item: {
+                [this.aliasAttrName]: follower,
+                [this.timestampAttrName]: status.timestamp,
+                [this.postAttrName]: status.post,
+                [this.authorAttrName]: status.user.alias,
+              },
+            },
+          })),
+        },
+      };
+  
+      try {
+        const command = new BatchWriteCommand(params);
+        const result = await this.client.send(command);
 
-    try {
-      await this.client.send(new PutCommand(params));
-      console.log(`Feed item created successfully for user ${alias}`);
-    } catch (e) {
-      console.error(`Could not create feed item for user ${alias}: ${e}`);
-      throw new Error(
-        `[Server Error]: Could not create feed item for user ${alias}:` + e
-      );
+        let unprocessedItems = result.UnprocessedItems;
+  
+        while (unprocessedItems && Object.keys(unprocessedItems).length > 0) {
+          const retryCommand = new BatchWriteCommand({ RequestItems: unprocessedItems });
+          const retryResult = await this.client.send(retryCommand);
+          unprocessedItems = retryResult.UnprocessedItems;
+        }
+  
+        console.log(`Successfully wrote status to follower batch of size ${batch.length}.`);
+      } catch (error) {
+        console.error('Error writing batch:', error);
+      }
     }
   }
 

@@ -2,21 +2,20 @@ import { Status, StatusDTO, UserDTO } from "tweeter-shared";
 import { DatabaseFactory } from "../dao/DatabaseFactory";
 
 export class StatusService {
-
   private feedsDAO;
   private storiesDAO;
   private authsDAO;
   private usersDAO;
-  private followsDAO;
   private profileImageDAO;
+  private queueDAO;
 
   public constructor(dbfactory: DatabaseFactory) {
     this.feedsDAO = dbfactory.createFeedsDAO();
     this.storiesDAO = dbfactory.createStoriesDAO();
     this.authsDAO = dbfactory.createAuthsDAO();
     this.usersDAO = dbfactory.createUsersDAO();
-    this.followsDAO = dbfactory.createFollowsDAO();
     this.profileImageDAO = dbfactory.createProfileImageDAO();
+    this.queueDAO = dbfactory.createQueueDAO();
   }
 
   public async loadMoreFeedItems(
@@ -26,7 +25,11 @@ export class StatusService {
     lastItem: StatusDTO | null
   ): Promise<[StatusDTO[], boolean]> {
     await this.validateToken(token);
-    const [statuses, hasMorePages] = await this.feedsDAO.getFeedItems(userAlias, pageSize, lastItem);
+    const [statuses, hasMorePages] = await this.feedsDAO.getFeedItems(
+      userAlias,
+      pageSize,
+      lastItem
+    );
     const statusDTOs = await this.packageUsersToStatusDTOs(statuses);
     return [statusDTOs, hasMorePages];
   }
@@ -38,18 +41,19 @@ export class StatusService {
     lastItem: StatusDTO | null
   ): Promise<[StatusDTO[], boolean]> {
     await this.validateToken(token);
-    const [statuses, hasMorePages] = await this.storiesDAO.getStoryItems(userAlias, pageSize, lastItem);
+    const [statuses, hasMorePages] = await this.storiesDAO.getStoryItems(
+      userAlias,
+      pageSize,
+      lastItem
+    );
     const statusDTOs = await this.packageUsersToStatusDTOs(statuses);
     return [statusDTOs, hasMorePages];
   }
 
-  public async postStatus(
-    token: string,
-    newStatus: StatusDTO
-  ): Promise<void> {
+  public async postStatus(token: string, newStatus: StatusDTO): Promise<void> {
     await this.validateToken(token);
     await this.storiesDAO.postStoryItem(newStatus);
-    await this.addStatusToFeeds(newStatus);
+    await this.queueDAO.createPostUpdateMessage(newStatus);
   }
 
   private async validateToken(token: string): Promise<void> {
@@ -59,7 +63,9 @@ export class StatusService {
     }
   }
 
-  private async packageUsersToStatusDTOs(statuses: StatusDTO[]): Promise<StatusDTO[]> {
+  private async packageUsersToStatusDTOs(
+    statuses: StatusDTO[]
+  ): Promise<StatusDTO[]> {
     const packagedDTOs: StatusDTO[] = [];
     for (const status of statuses) {
       const user = await this.usersDAO.getUserByAlias(status.user.alias);
@@ -70,27 +76,20 @@ export class StatusService {
             alias: user.alias,
             firstName: user.firstName,
             lastName: user.lastName,
-            imageUrl: imageUrl
+            imageUrl: imageUrl,
           },
           post: status.post,
-          timestamp: status.timestamp
+          timestamp: status.timestamp,
         });
       }
     }
     return packagedDTOs;
   }
 
-  private async addStatusToFeeds(newStatus: StatusDTO): Promise<void> {
-    var lastFollower = undefined;
-    do {
-      var [followers, hasMore] = await this.followsDAO.getFollowers(newStatus.user.alias, 50, lastFollower);
-      for (const follower of followers) {
-        await this.feedsDAO.addFeedItem(follower, newStatus);
-      }
-      if (hasMore) {
-        lastFollower = followers[followers.length - 1];
-      }
-    } while (hasMore);
+  public async addStatusToFeeds(
+    followers: string[],
+    newStatus: StatusDTO
+  ): Promise<void> {
+    await this.feedsDAO.addStatusToFeeds(followers, newStatus);
   }
-
 }

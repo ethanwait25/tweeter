@@ -5,6 +5,7 @@ import { DynamoFeedsDAO } from "./DynamoFeedsDAO";
 import { DynamoFollowsDAO } from "./DynamoFollowsDAO";
 import { DynamoStoriesDAO } from "./DynamoStoriesDAO";
 import { DynamoUsersDAO } from "./DynamoUsersDAO";
+import { SQSQueueDAO } from "./SQSQueueDAO";
 
 export class DynamoFactory implements DatabaseFactory {
     createAuthsDAO(): DynamoAuthsDAO {
@@ -29,5 +30,9 @@ export class DynamoFactory implements DatabaseFactory {
 
     createProfileImageDAO(): S3ProfileImageDAO {
         return new S3ProfileImageDAO();
+    }
+
+    createQueueDAO(): SQSQueueDAO {
+        return new SQSQueueDAO();
     }
 }

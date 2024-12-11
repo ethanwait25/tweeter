@@ -1,5 +1,4 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import { ObjectCannedACL } from "@aws-sdk/client-s3";
 import { ProfileImageDAO } from "../ProfileImageDAO";
 
 export class S3ProfileImageDAO implements ProfileImageDAO {
